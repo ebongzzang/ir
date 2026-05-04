@@ -9,6 +9,7 @@ repository = "https://github.com/vlwkaos/ir"
 [features]
 default = ["llama-metal", "llama-openmp"]
 llama-metal = ["llama-cpp-2/metal"]
+llama-cuda = ["llama-cpp-2/cuda"]
 llama-openmp = ["llama-cpp-2/openmp"]
 
 [[bin]]
