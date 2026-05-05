@@ -17,6 +17,7 @@ const CONTEXT_SIZE: u32 = 2048;
 pub struct Reranker {
     backend: &'static LlamaBackend,
     model: LlamaModel,
+    model_filename: String,
     yes_token_id: i32,
     no_token_id: i32,
     // ! Cached context: model outlives context (same struct, drop order: fields drop in declaration order,
@@ -34,9 +35,14 @@ impl Reranker {
         let model = LlamaModel::load_from_file(backend, model_path, &model_load_params())
             .map_err(|e| Error::Other(format!("load reranker: {e}")))?;
         let (yes_token_id, no_token_id) = scoring::resolve_yes_no_tokens(&model)?;
+        let model_filename = model_path
+            .file_name()
+            .map(|f| f.to_string_lossy().into_owned())
+            .unwrap_or_else(|| models::RERANKER.to_string());
         Ok(Self {
             backend,
             model,
+            model_filename,
             yes_token_id,
             no_token_id,
             cached_ctx: Mutex::new(None),
@@ -46,7 +52,7 @@ impl Reranker {
     pub fn load_default() -> Result<Self> {
         let path = match crate::llm::download::resolve_env_hf_or_path(
             env::RERANKER_MODEL,
-            &[models::RERANKER],
+            &[models::RERANKER, models::RERANKER_4B],
         )? {
             Some(p) => p,
             None => crate::llm::download::ensure_model(models::RERANKER)?,
@@ -86,7 +92,7 @@ impl Drop for Reranker {
 
 impl Scorer for Reranker {
     fn model_id(&self) -> &str {
-        models::RERANKER
+        &self.model_filename
     }
 
     fn score_batch(&self, query: &str, docs: &[&str]) -> Result<Vec<f64>> {

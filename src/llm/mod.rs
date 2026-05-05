@@ -33,6 +33,7 @@ static LOGS_INIT: OnceLock<()> = OnceLock::new();
 pub mod models {
     pub const EMBEDDING: &str = "embeddinggemma-300M-Q8_0.gguf";
     pub const RERANKER: &str = "qwen3-reranker-0.6b-q8_0.gguf";
+    pub const RERANKER_4B: &str = "qwen3-reranker-4b-q4_k_m.gguf";
     pub const EXPANDER: &str = "qmd-query-expansion-1.7B-q4_k_m.gguf";
     pub const QWEN35_0_8B: &str = "Qwen3.5-0.8B-Q8_0.gguf";
     pub const QWEN35_2B: &str = "Qwen3.5-2B-Q4_K_M.gguf";
@@ -50,6 +51,10 @@ pub mod hf_repos {
         "ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF",
         "qwen3-reranker-0.6b-q8_0.gguf",
     );
+    pub const RERANKER_4B: (&str, &str) = (
+        "giladgd/Qwen3-Reranker-4B-GGUF",
+        "Qwen3-Reranker-4B.Q4_K_M.gguf",
+    );
     pub const EXPANDER: (&str, &str) = (
         "tobil/qmd-query-expansion-1.7B",
         // ! uppercase on HF; local name uses lowercase q4_k_m
@@ -64,6 +69,7 @@ pub mod hf_repos {
         match filename {
             super::models::EMBEDDING => Some(EMBEDDING),
             super::models::RERANKER => Some(RERANKER),
+            super::models::RERANKER_4B => Some(RERANKER_4B),
             super::models::EXPANDER => Some(EXPANDER),
             super::models::QWEN35_0_8B => Some(QWEN35_0_8B),
             super::models::QWEN35_2B => Some(QWEN35_2B),
@@ -77,6 +83,7 @@ pub mod hf_repos {
         &[
             EMBEDDING,
             RERANKER,
+            RERANKER_4B,
             EXPANDER,
             QWEN35_0_8B,
             QWEN35_2B,
@@ -92,6 +99,8 @@ pub mod hf_repos {
             Some(super::models::EMBEDDING)
         } else if eq(RERANKER.0) {
             Some(super::models::RERANKER)
+        } else if eq(RERANKER_4B.0) {
+            Some(super::models::RERANKER_4B)
         } else if eq(EXPANDER.0) {
             Some(super::models::EXPANDER)
         } else if eq(QWEN35_0_8B.0) {
