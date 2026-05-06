@@ -47,9 +47,8 @@ impl PreprocessHandle {
         let program = expanded.as_os_str();
         // Preprocessor commands embed variable references in args (e.g. --dict $IR_DIR/preprocessors/jieba);
         // Command::args() does not invoke a shell, so variables must be expanded explicitly.
-        let args: Vec<std::ffi::OsString> = parts
-            .map(|a| expand_path(a).into_os_string())
-            .collect();
+        let args: Vec<std::ffi::OsString> =
+            parts.map(|a| expand_path(a).into_os_string()).collect();
 
         match Command::new(program)
             .args(&args)
@@ -346,14 +345,23 @@ mod tests {
 
         // Segmentation: jieba must split 你好世界 into separate tokens
         let out = handle.process_line("你好世界").unwrap();
-        assert_ne!(out, "你好世界", "jieba must segment Chinese words (got identical output)");
-        assert!(!out.is_empty(), "jieba must produce output for Chinese text");
+        assert_ne!(
+            out, "你好世界",
+            "jieba must segment Chinese words (got identical output)"
+        );
+        assert!(
+            !out.is_empty(),
+            "jieba must produce output for Chinese text"
+        );
 
         // ASCII must pass through unchanged — the sentinel protocol relies on this.
         // (Cannot use IRSENTINEL itself as content: the read loop would treat its echo as the
         // sentinel terminator and return "" — use a different ASCII word instead.)
         let ascii_out = handle.process_line("hello").unwrap();
-        assert_eq!(ascii_out, "hello", "ASCII words must pass through zh preprocessor unchanged");
+        assert_eq!(
+            ascii_out, "hello",
+            "ASCII words must pass through zh preprocessor unchanged"
+        );
 
         // Punctuation line: must not deadlock; result is either passed through or empty
         let _ = handle.process_line("。").unwrap();

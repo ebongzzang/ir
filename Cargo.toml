@@ -1,6 +1,6 @@
 [package]
 name = "ir-search"
-version = "0.14.1"
+version = "0.15.0"
 edition = "2024"
 description = "Local markdown semantic search with hybrid BM25+vector retrieval and LLM reranking"
 license = "MIT"
@@ -9,8 +9,10 @@ repository = "https://github.com/vlwkaos/ir"
 [features]
 default = ["llama-metal", "llama-openmp"]
 llama-metal = ["llama-cpp-2/metal"]
-llama-cuda = ["llama-cpp-2/cuda"]
 llama-openmp = ["llama-cpp-2/openmp"]
+llama-cuda = ["llama-cpp-2/cuda"]
+llama-rocm = ["llama-cpp-2/rocm"]
+llama-vulkan = ["llama-cpp-2/vulkan"]
 
 [[bin]]
 name = "ir"
